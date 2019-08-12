@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
  */
 public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
     public RobotConstants robotConstants;
-    public static double mmPerPulse = 0.2355;
+    public static double mmPerPulse = 0.3*Math.PI;
     private int xEncoderPulses;
     private int yEncoderPulses;
     public Vector2 CurrentPos;
@@ -66,16 +66,16 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
             /**
              *  delta x in mm
              * */
-             dx = (xPulsesCurrent - xEncoderPulses) * mmPerPulse * Math.asin(Math.toRadians(angle));
+            dx = (xPulsesCurrent - xEncoderPulses) * mmPerPulse * Math.acos(MathFunctions.FixAngleRad(Math.toRadians(angle))) ;//+ (yPulsesCurrent-yEncoderPulses) * mmPerPulse * Math.asin(MathFunctions.FixAngleRad(Math.toRadians(angle))) ;
         } else{
             dx=0;
         }
         if (yPulsesCurrent!=yEncoderPulses) {
-        /**
-         *  delta y in mm
-         * */
-            dy = ((yPulsesCurrent - yEncoderPulses) * mmPerPulse * Math.acos(Math.toRadians(angle)))/10;
-        } else  {
+            /**
+             *  delta y in mm
+             * */
+            dy = (yPulsesCurrent-yEncoderPulses) * mmPerPulse * Math.asin(MathFunctions.FixAngleRad(Math.toRadians(angle))) ;// + (xPulsesCurrent - xEncoderPulses) * mmPerPulse * Math.acos(MathFunctions.FixAngleRad(Math.toRadians(angle)));
+        } else{
             dy=0;
         }
         //add the deltas to the current position
@@ -88,7 +88,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         b.put("dY", dy);
         b.put("xPos", CurrentPos.X);
         b.put("yPos", CurrentPos.Y);
-        b.put("anlge", angle);
+        b.put("angle", angle);
         //b.fieldOverlay().fillRect(CurrentPos.X/25.4 ,CurrentPos.Y/25.4 ,20,20);
         dashboard.sendTelemetryPacket(b);
         xEncoderPulses = xPulsesCurrent;
@@ -110,7 +110,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
             /**
              *  delta x in mm
              * */
-            dx = (xPulsesCurrent - xEncoderPulses) * mmPerPulse * Math.asin(Math.toRadians(angle));
+            dx = (xPulsesCurrent - xEncoderPulses) * mmPerPulse * Math.acos(MathFunctions.FixAngleRad(Math.toRadians(angle))) + (yPulsesCurrent-yEncoderPulses) * mmPerPulse * Math.asin(MathFunctions.FixAngleRad(Math.toRadians(angle))) ;
         } else{
             dx=0;
         }
@@ -118,7 +118,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
             /**
              *  delta y in mm
              * */
-            dy = ((yPulsesCurrent-yEncoderPulses) * mmPerPulse * Math.acos(Math.toRadians(angle)))/10;
+            dy = (yPulsesCurrent-yEncoderPulses) * mmPerPulse * Math.asin(MathFunctions.FixAngleRad(Math.toRadians(angle))) + (xPulsesCurrent - xEncoderPulses) * mmPerPulse * Math.acos(MathFunctions.FixAngleRad(Math.toRadians(angle)));
         } else{
             dy=0;
         }
@@ -146,6 +146,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
      * @param precision the precision of the angle turned to. This is used in the Ish function, as a value range in which the angle should be
      */
     public void TurnToAngle (double angle, double speed, double precision) {
+        speed = speed/16;
         while (!MathFunctions.Ish(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle,precision, MathFunctions.FixAngle( angle)) && opMode.opModeIsActive()) {
             //calculate the delta and send it to the dashboard
             double delta = angle - imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
@@ -221,8 +222,46 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         }
         MotorBackLeft.setPower(0);
         MotorFrontLeft.setPower(0);
-        MotorFrontRight.setPower(0);
         MotorBackRight.setPower(0);
+        MotorFrontRight.setPower(0);
 
+    }
+
+    /**
+     * moves the robot forwrd for a certain distance based on encoder values
+     * @param Speed
+     * @param distance
+     */
+    public void EncoderDriveForwardCorrection (float Speed, double distance){
+        float startAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
+
+        double left = 0;
+        double right = 0;
+        double correction;
+        double startPosY = CurrentPos.Y;
+
+        while (startPosY + distance > CurrentPos.Y && opMode.opModeIsActive()){
+            correction = (startAngle - imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle)*-0.1;
+            right = Speed + correction;
+            left = (Speed - correction)*-1;
+            MotorFrontRight.setPower(right);
+            MotorBackRight.setPower(right);
+            MotorFrontLeft.setPower(left);
+            MotorBackLeft.setPower(left);
+            UpdatePos();
+        }
+        MotorBackLeft.setPower(0);
+        MotorFrontLeft.setPower(0);
+        MotorBackRight.setPower(0);
+        MotorFrontRight.setPower(0);
+    }
+
+    public void MoveToPos(Vector2 point, float speed){
+        double dx = point.X - CurrentPos.X;
+        double dy = point.Y - CurrentPos.Y;
+        double absoluteAngle = Math.atan2(dy,dx);
+        TurnToAngle(absoluteAngle,.5*speed, .1);
+        double distanceToTarget = Math.sqrt(dx*dx + dy*dy);
+        EncoderDriveForwardCorrection(speed,distanceToTarget);
     }
 }

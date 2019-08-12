@@ -82,6 +82,7 @@ public class DriveTrainMecanum {
      * @param precision the precision of the angle turned to. This is used in the Ish function, as a value range in which the angle should be
      */
     public void TurnToAngle (double angle, double speed, double precision) {
+        speed = speed/16;
         while (!MathFunctions.Ish(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle,precision, MathFunctions.FixAngle( angle)) && opMode.opModeIsActive()) {
             //calculate the delta and send it to the dashboard
             double delta = angle - imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;

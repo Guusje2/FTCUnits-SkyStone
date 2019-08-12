@@ -42,7 +42,7 @@ public class testController extends LinearOpMode {
         } catch (Exception e){
 
         }
-        int i = -1;
+        int i = 1;
         while (opModeIsActive()){
             a.UpdatePos();
 
@@ -59,7 +59,7 @@ public class testController extends LinearOpMode {
                 a.MoveSideWaySeconds(1,5);
                 i=1;
             } else if (i == 1){
-                a.TurnToAngle(90,.45,0.25);
+                a.TurnToAngle(90,1,0.25);
                 i = 2;
             } else {
 

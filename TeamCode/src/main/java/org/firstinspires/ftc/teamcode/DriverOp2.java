@@ -26,21 +26,21 @@ public class DriverOp2 extends OpMode {
     private DcMotor MotorFrontLeft;
     private DcMotor MotorBackRight;
     private DcMotor MotorBackLeft;
-    private DcMotor ArmMotor;
-    private Servo BlockBoxServo;
-    private Servo ArmServo1;
-    private CRServo ArmServo2;
-    private Servo ArmServo3;
-    public  boolean IsControlled = true;
-    private DcMotor LiftMotor;
+   // private DcMotor ArmMotor;
+   // private Servo BlockBoxServo;
+   // private Servo ArmServo1;
+   // private CRServo ArmServo2;
+   // private Servo ArmServo3;
+   // public  boolean IsControlled = true;
+   // private DcMotor LiftMotor;
     double driveDirectionSpeed = 1 ;
-    private ColorSensor testSensor;
+   // private ColorSensor testSensor;
     private float x;
     private float y;
     private String servomessage;
     private boolean isLocked;
-    private float ArmServo2Power = 0;
-    private float ArmServo3Pos;
+  //  private float ArmServo2Power = 0;
+   // private float ArmServo3Pos;
     private double startTimeLock;
 
 
@@ -51,11 +51,11 @@ public class DriverOp2 extends OpMode {
         MotorFrontLeft  = hardwareMap.dcMotor.get("MotorFrontLeft");
         MotorFrontRight = hardwareMap.dcMotor.get("MotorFrontRight");
         //ArmMotor = hardwareMap.dcMotor.get("ArmMotor");
-        LiftMotor = hardwareMap.dcMotor.get("LiftMotor");
-        BlockBoxServo = hardwareMap.servo.get("BlockBoxServo");
-        ArmServo1 = hardwareMap.servo.get("ArmServo1");
-        ArmServo2 = hardwareMap.crservo.get("ArmServo2");
-        ArmServo3 = hardwareMap.servo.get("ArmServo3");
+        //LiftMotor = hardwareMap.dcMotor.get("LiftMotor");
+        //BlockBoxServo = hardwareMap.servo.get("BlockBoxServo");
+        //ArmServo1 = hardwareMap.servo.get("ArmServo1");
+        //ArmServo2 = hardwareMap.crservo.get("ArmServo2");
+        //ArmServo3 = hardwareMap.servo.get("ArmServo3");
 
         driveDirectionSpeed  = 1;
 
@@ -64,7 +64,7 @@ public class DriverOp2 extends OpMode {
         } catch (Exception e) {
 
         }
-        BlockBoxClose();
+       // BlockBoxClose();
 
     }
 
@@ -73,7 +73,7 @@ public class DriverOp2 extends OpMode {
 
         SpeedChecks();
         DriveChecks();
-        ArmChecks();
+        //ArmChecks();
 
     }
 
@@ -98,11 +98,11 @@ public class DriverOp2 extends OpMode {
             temp = driveDirectionSpeed;
             driveDirectionSpeed = temp * -1;
         }
-        if (gamepad1.x){
-            BLockBoxOpen();
-        } else {
-            BlockBoxClose();
-        }
+        //if (gamepad1.x){
+          //  BLockBoxOpen();
+        //} else {
+          //  BlockBoxClose();
+        //}
 
         if(gamepad1.left_bumper){
             if(x != -1)
@@ -125,18 +125,18 @@ public class DriverOp2 extends OpMode {
         if (gamepad1.dpad_right) {
             sidemoving(-1);
         }
-        if (isLocked){
-            if (startTimeLock + 20 < getRuntime()){
-                isLocked = false;
-            }
-            LiftMotor.setPower(-.5);
-        } else {
-            LiftMotor.setPower(-gamepad2.left_stick_y);
-        }
-        if(gamepad2.a){
-             isLocked = true;
-             startTimeLock = getRuntime();
-       }
+        //if (isLocked){
+          //  if (startTimeLock + 20 < getRuntime()){
+           //     isLocked = false;
+            //}
+            //LiftMotor.setPower(-.5);
+        //} else {
+          //  LiftMotor.setPower(-gamepad2.left_stick_y);
+        //}
+        //if(gamepad2.a){
+          //   isLocked = true;
+            // startTimeLock = getRuntime();
+       //}
        if(gamepad2.b){
             isLocked = false;
        }
@@ -150,7 +150,7 @@ public class DriverOp2 extends OpMode {
             MotorFrontRight.setPower(speed);
         }
     
-    public void ArmChecks() {
+    /*public void ArmChecks() {
        
        if (gamepad2.left_bumper){
                ArmServo2Power = -1;
@@ -179,19 +179,19 @@ public class DriverOp2 extends OpMode {
 
     /**
      * Opens the BlockBox, used for teammaker/game elements
-     */
+     *//*
     public void BLockBoxOpen () {
         BlockBoxServo.setPosition(0);
 
-    }
+    } */
 
     /**
      * Closes the BlockBox, used for teammarker/game elements
-     */
+     *
     public void BlockBoxClose () {
         BlockBoxServo.setPosition(.3);
     }
 
-
+*/
 }
 

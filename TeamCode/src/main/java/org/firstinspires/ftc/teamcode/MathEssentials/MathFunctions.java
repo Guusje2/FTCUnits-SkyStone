@@ -28,4 +28,17 @@ public class MathFunctions {
         }
         return angle;
     }
+
+    /**
+     * returns an angle between -PI/2 and PI/2
+     */
+    public static double FixAngleRad (double angle){
+        while (angle <= -Math.PI/2){
+            angle += Math.PI/2;
+        }
+        while (angle >= Math.PI/2){
+            angle -= Math.PI/2;
+        }
+        return angle;
+    }
 }
