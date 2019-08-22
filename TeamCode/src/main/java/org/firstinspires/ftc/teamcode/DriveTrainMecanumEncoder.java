@@ -24,7 +24,8 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
     public Vector2 CurrentPos;
     private double dx = 0;
     private double dy = 0;
-	public double currAngle;
+    public double currAngle;
+    double prevAngle;
 
     public  DriveTrainMecanumEncoder (DcMotor _MotorBackLeft, DcMotor _MotorBackRight, DcMotor _MotorFrontLeft, DcMotor _MotorFrontRight, BNO055IMU _imu) {
         MotorBackLeft = _MotorBackLeft;
@@ -62,27 +63,23 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         currAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
         int xPulsesCurrent = MotorFrontLeft.getCurrentPosition();
         int yPulsesCurrent = MotorBackLeft.getCurrentPosition();
-
-        //calculate deltas
-        if (xPulsesCurrent!=xEncoderPulses) {
-            /**
-             *  delta x in mm
-             * */
-            dx = (xPulsesCurrent - xEncoderPulses) * mmPerPulse * Math.acos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) ;//+ (yPulsesCurrent-yEncoderPulses) * mmPerPulse * Math.asin(MathFunctions.FixAngleRad(Math.toRadians(angle))) ;
-        } else{
-            dx=0;
-        }
-        if (yPulsesCurrent!=yEncoderPulses) {
-            /**
-             *  delta y in mm
-             * */
-            dy = (yPulsesCurrent-yEncoderPulses) * mmPerPulse * Math.asin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) ;// + (xPulsesCurrent - xEncoderPulses) * mmPerPulse * Math.acos(MathFunctions.FixAngleRad(Math.toRadians(angle)));
-        } else{
-            dy=0;
-        }
+		
+		//Calculate encoder deltas
+		double xEncoderDelta = xPulsesCurrent - xEncoderPulses;
+		double yEncoderDelta = yEncoderCurrent - yEncoderPulses;
+		
+        //Calculate Xmovement relative to robot in mm
+		double xMovementRobot = xEncoderDelta * mmPerPulse;
+		double yMovementRobot = yEncoderDelta * mmPerPulse
+		
+		//Calculate the accurate deltas in world space
+		double dx = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians())) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians())) * xMovementRobot);
+		double dy = (Math.sin(MathFunctions.FixAngleRad(Math.toRadians())) * yMovementRobot) + (Math.cos(MathFunctions.FixAngleRad(Math.toRadians())) * xMovementRobot);
+		
         //add the deltas to the current position
         CurrentPos = new Vector2(CurrentPos.X + dx,CurrentPos.Y + dy);
 
+		//send telemetry
         TelemetryPacket b = new TelemetryPacket();
         b.put("xPulse", MotorFrontLeft.getCurrentPosition());
         b.put("yPulse", MotorBackLeft.getCurrentPosition());
@@ -93,8 +90,10 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         b.put("angle", currAngle);
         //b.fieldOverlay().fillRect(CurrentPos.X/25.4 ,CurrentPos.Y/25.4 ,20,20);
         dashboard.sendTelemetryPacket(b);
+		//set all values for the next run
         xEncoderPulses = xPulsesCurrent;
         yEncoderPulses = yPulsesCurrent;
+		prevAngle = currAngle;
     }
 
     /**
@@ -139,6 +138,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         dashboard.sendTelemetryPacket(packet);
         xEncoderPulses = xPulsesCurrent;
         yEncoderPulses = yPulsesCurrent;
+		prevAngle = currAngle;
     }
 
     /**
