@@ -66,15 +66,15 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
 		
 		//Calculate encoder deltas
 		double xEncoderDelta = xPulsesCurrent - xEncoderPulses;
-		double yEncoderDelta = yEncoderCurrent - yEncoderPulses;
+		double yEncoderDelta = yPulsesCurrent - yEncoderPulses;
 		
         //Calculate Xmovement relative to robot in mm
 		double xMovementRobot = xEncoderDelta * mmPerPulse;
-		double yMovementRobot = yEncoderDelta * mmPerPulse
+		double yMovementRobot = yEncoderDelta * mmPerPulse;
 		
 		//Calculate the accurate deltas in world space
-		double dx = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians())) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians())) * xMovementRobot);
-		double dy = (Math.sin(MathFunctions.FixAngleRad(Math.toRadians())) * yMovementRobot) + (Math.cos(MathFunctions.FixAngleRad(Math.toRadians())) * xMovementRobot);
+		double dx = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
+		double dy = (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
 		
         //add the deltas to the current position
         CurrentPos = new Vector2(CurrentPos.X + dx,CurrentPos.Y + dy);
@@ -106,23 +106,18 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         int xPulsesCurrent = MotorFrontLeft.getCurrentPosition();
         int yPulsesCurrent = MotorBackLeft.getCurrentPosition();
 
-        //calculate deltas
-        if (xPulsesCurrent!=xEncoderPulses) {
-            /**
-             *  delta x in mm
-             * */
-            dx = (xPulsesCurrent - xEncoderPulses) * mmPerPulse * Math.acos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) ;//+ (yPulsesCurrent-yEncoderPulses) * mmPerPulse * Math.asin(MathFunctions.FixAngleRad(Math.toRadians(angle))) ;
-        } else{
-            dx=0;
-        }
-        if (yPulsesCurrent!=yEncoderPulses) {
-            /**
-             *  delta y in mm
-             * */
-            dy = (yPulsesCurrent - yEncoderPulses) * mmPerPulse * Math.asin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) ;// + (xPulsesCurrent - xEncoderPulses) * mmPerPulse * Math.acos(MathFunctions.FixAngleRad(Math.toRadians(angle)));
-        } else{
-            dy=0;
-        }
+        //Calculate encoder deltas
+        double xEncoderDelta = xPulsesCurrent - xEncoderPulses;
+        double yEncoderDelta = yPulsesCurrent - yEncoderPulses;
+
+        //Calculate Xmovement relative to robot in mm
+        double xMovementRobot = xEncoderDelta * mmPerPulse;
+        double yMovementRobot = yEncoderDelta * mmPerPulse;
+
+        //Calculate the accurate deltas in world space
+        double dx = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
+        double dy = (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
+
         //add the deltas to the current position
         CurrentPos = new Vector2(CurrentPos.X + dx,CurrentPos.Y + dy);
 
@@ -131,7 +126,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         packet.put("yPulse", MotorBackLeft.getCurrentPosition());
         packet.put("xPos", CurrentPos.X);
         packet.put("yPos", CurrentPos.Y);
-        packet.put("angle", angle);
+        packet.put("angle", currAngle);
         //divide by 25.4 because from mm to inches
         //
         // packet.fieldOverlay().fillRect(CurrentPos.X/25.4 + 77,CurrentPos.Y/25.4 + 77,20,20);
@@ -207,7 +202,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
      */
     public void DriveForwardCorrection (float timeSeconds, float Speed)
     {
-        float startAngle = currAngle;
+        double startAngle = currAngle;
         double endTime = System.currentTimeMillis() + (timeSeconds*1000);
         double left = 0;
         double right = 0;
@@ -235,7 +230,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
      * @param distance
      */
     public void EncoderDriveForwardCorrection (float Speed, double distance){
-        float startAngle = currAngle;
+        double startAngle = currAngle;
 
         double left = 0;
         double right = 0;

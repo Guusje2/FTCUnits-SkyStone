@@ -41,4 +41,16 @@ public class MathFunctions {
         }
         return angle;
     }
+
+    /**
+     * always returns an angle
+     * @param angle in degrees
+     */
+    /*
+    public static double fixedaSin (double angle) {
+        double angleRad = Math.toRadians(angle);
+        if(angleRad > .5*Math.PI() && angleRad < Math.PI) {
+            return Math.sin()
+        }
+    }*/
 }
