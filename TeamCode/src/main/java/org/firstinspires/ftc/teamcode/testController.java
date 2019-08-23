@@ -6,6 +6,8 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
+
 import java.util.Calendar;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
@@ -42,7 +44,7 @@ public class testController extends LinearOpMode {
         } catch (Exception e){
 
         }
-        int i = 1;
+        int i = 2;
         while (opModeIsActive()){
             a.UpdatePos();
 
@@ -61,8 +63,9 @@ public class testController extends LinearOpMode {
             } else if (i == 1){
                 a.TurnToAngle(90,1,0.25);
                 i = 2;
-            } else {
-
+            } else if (i == 2){
+                a.MoveToPos(new Vector2(0,500), 0.25f);
+                i=3;
             }
         }
         logUtils.StopLogging(1);

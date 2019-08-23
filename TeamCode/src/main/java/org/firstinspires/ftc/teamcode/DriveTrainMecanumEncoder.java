@@ -18,7 +18,6 @@ import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
  */
 public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
     public RobotConstants robotConstants;
-    public static double mmPerPulse = 0.3*Math.PI;
     private int xEncoderPulses;
     private int yEncoderPulses;
     public Vector2 CurrentPos;
@@ -39,7 +38,6 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        mmPerPulse = 0.2355;
         MotorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         MotorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robotConstants = new RobotConstants();
@@ -61,21 +59,22 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
     public void UpdatePos() {
         //putting the angle of the robot in a variable to reduce calls to the imu(which are slower)
         currAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
+        //inverted because the encoder is mounted the wrong way, not easily fixable
         int xPulsesCurrent = MotorFrontLeft.getCurrentPosition();
         int yPulsesCurrent = MotorBackLeft.getCurrentPosition();
-		
-		//Calculate encoder deltas
-		double xEncoderDelta = xPulsesCurrent - xEncoderPulses;
-		double yEncoderDelta = yPulsesCurrent - yEncoderPulses;
-		
+
+        //Calculate encoder deltas
+        double xEncoderDelta = xPulsesCurrent - xEncoderPulses;
+        double yEncoderDelta = yPulsesCurrent - yEncoderPulses;
+
         //Calculate Xmovement relative to robot in mm
-		double xMovementRobot = xEncoderDelta * mmPerPulse;
-		double yMovementRobot = yEncoderDelta * mmPerPulse;
-		
-		//Calculate the accurate deltas in world space
-		double dx = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
-		double dy = (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
-		
+        double xMovementRobot = xEncoderDelta * RobotConstants.mmPerPulse;
+        double yMovementRobot = yEncoderDelta * RobotConstants.mmPerPulse;
+
+        //Calculate the accurate deltas in world space
+        double dx = (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
+        double dy = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
+
         //add the deltas to the current position
         CurrentPos = new Vector2(CurrentPos.X + dx,CurrentPos.Y + dy);
 
@@ -111,12 +110,12 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         double yEncoderDelta = yPulsesCurrent - yEncoderPulses;
 
         //Calculate Xmovement relative to robot in mm
-        double xMovementRobot = xEncoderDelta * mmPerPulse;
-        double yMovementRobot = yEncoderDelta * mmPerPulse;
+        double xMovementRobot = xEncoderDelta * RobotConstants.mmPerPulse;
+        double yMovementRobot = yEncoderDelta * RobotConstants.mmPerPulse;
 
         //Calculate the accurate deltas in world space
-        double dx = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
-        double dy = (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
+        double dx = (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
+        double dy = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
 
         //add the deltas to the current position
         CurrentPos = new Vector2(CurrentPos.X + dx,CurrentPos.Y + dy);
@@ -126,6 +125,8 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         packet.put("yPulse", MotorBackLeft.getCurrentPosition());
         packet.put("xPos", CurrentPos.X);
         packet.put("yPos", CurrentPos.Y);
+        packet.put("dx", dx);
+        packet.put("dy", dy);
         packet.put("angle", currAngle);
         //divide by 25.4 because from mm to inches
         //
@@ -231,16 +232,18 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
      */
     public void EncoderDriveForwardCorrection (float Speed, double distance){
         double startAngle = currAngle;
-
         double left = 0;
         double right = 0;
         double correction;
         double startPosY = CurrentPos.Y;
 
+        double motorSpeed=0;
+
         while (startPosY + distance > CurrentPos.Y && opMode.opModeIsActive()){
             correction = (startAngle - currAngle)*-0.1;
-            right = Speed + correction;
-            left = (Speed - correction)*-1;
+            motorSpeed = Speed;
+            right = motorSpeed + correction;
+            left = (motorSpeed - correction);
             MotorFrontRight.setPower(right);
             MotorBackRight.setPower(right);
             MotorFrontLeft.setPower(left);
@@ -256,8 +259,8 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
     public void MoveToPos(Vector2 point, float speed){
         double dx = point.X - CurrentPos.X;
         double dy = point.Y - CurrentPos.Y;
-        double absoluteAngle = Math.atan2(dy,dx);
-        TurnToAngle(absoluteAngle,.5*speed, .1);
+        double absoluteAngle = Math.toDegrees(Math.atan2(dx,dy));
+        TurnToAngle(absoluteAngle,2*speed, .1);
         double distanceToTarget = Math.sqrt(dx*dx + dy*dy);
         EncoderDriveForwardCorrection(speed,distanceToTarget);
     }
