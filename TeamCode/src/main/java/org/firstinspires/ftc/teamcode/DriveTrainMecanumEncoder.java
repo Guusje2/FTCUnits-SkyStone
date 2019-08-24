@@ -144,7 +144,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
      * @param precision the precision of the angle turned to. This is used in the Ish function, as a value range in which the angle should be
      */
     public void TurnToAngle (double angle, double speed, double precision) {
-        speed = speed/16;
+        speed = speed/12;
         while (!MathFunctions.Ish(currAngle,precision, MathFunctions.FixAngle( angle)) && opMode.opModeIsActive()) {
             //calculate the delta and send it to the dashboard
             double delta = angle - currAngle;

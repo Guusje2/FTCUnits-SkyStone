@@ -44,7 +44,7 @@ public class testController extends LinearOpMode {
         } catch (Exception e){
 
         }
-        int i = 2;
+        int i = 1;
         while (opModeIsActive()){
             a.UpdatePos();
 
@@ -64,8 +64,10 @@ public class testController extends LinearOpMode {
                 a.TurnToAngle(90,1,0.25);
                 i = 2;
             } else if (i == 2){
-                a.MoveToPos(new Vector2(0,500), 0.25f);
+                a.TurnToAngle(-90  ,1,0.25);
                 i=3;
+            } else if (i == 3) {
+                a.TurnToAngle(135, 1, 0.25);
             }
         }
         logUtils.StopLogging(1);
