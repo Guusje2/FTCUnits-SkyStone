@@ -257,11 +257,23 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
     }
 
     public void MoveToPos(Vector2 point, float speed){
-        double dx = point.X - CurrentPos.X;
+		double startDistance = CurrentPos.DistanceToVector2(point);
+		double currDistance;
+		double dx = point.X - CurrentPos.X;
         double dy = point.Y - CurrentPos.Y;
         double absoluteAngle = Math.toDegrees(Math.atan2(dx,dy));
         TurnToAngle(absoluteAngle,2*speed, .1);
-        double distanceToTarget = Math.sqrt(dx*dx + dy*dy);
-        EncoderDriveForwardCorrection(speed,distanceToTarget);
-    }
+		while(MathFunctions.Ish(currDistance, 10, 0) {
+			currDistance = CurrentPos.DistanceToVector2(point);
+			//TODO: add speed of robot to this calculation
+			double forwardSpeed = speed*(currDistance/startDistance)
+			//times -1 because our left drivetrain motors are mirrored from the right ones
+			double speedLeft = (forwardSpeed*0.8 + -0.1*(currAngle - absoluteAngle))*-1;
+			double speedRight = forwardSpeed*0.8 + 0.1*(currAngle - absoluteAngle);
+			MotorBackLeft.setPower(speedLeft);
+			MotorFrontLeft.setPower(speedLeft);
+			MotorBackRight.setPower(speedRight);
+			MotorFrontRight.setPower(speedRight);
+		}
+	}
 }
