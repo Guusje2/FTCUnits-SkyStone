@@ -6,9 +6,11 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryImpl;
 import org.firstinspires.ftc.teamcode.MathEssentials.MathFunctions;
 import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
 
@@ -47,6 +49,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         CurrentPos = new Vector2(0,0);
 		currAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
         try {
+            FtcDashboard.start();
             dashboard = FtcDashboard.getInstance();
         } catch (Exception e) {
 
@@ -144,7 +147,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
      * @param precision the precision of the angle turned to. This is used in the Ish function, as a value range in which the angle should be
      */
     public void TurnToAngle (double angle, double speed, double precision) {
-        speed = speed/12;
+        speed = speed/10;
         while (!MathFunctions.Ish(currAngle,precision, MathFunctions.FixAngle( angle)) && opMode.opModeIsActive()) {
             //calculate the delta and send it to the dashboard
             double delta = angle - currAngle;
@@ -258,15 +261,15 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
 
     public void MoveToPos(Vector2 point, float speed){
 		double startDistance = CurrentPos.DistanceToVector2(point);
-		double currDistance;
+		double currDistance = CurrentPos.DistanceToVector2(point); ;
 		double dx = point.X - CurrentPos.X;
         double dy = point.Y - CurrentPos.Y;
         double absoluteAngle = Math.toDegrees(Math.atan2(dx,dy));
-        TurnToAngle(absoluteAngle,2*speed, .1);
-		while(MathFunctions.Ish(currDistance, 10, 0) {
+        TurnToAngle(absoluteAngle,2*speed, 1);
+		while(!MathFunctions.Ish(currDistance, 10, 0) && opMode.opModeIsActive()) {
 			currDistance = CurrentPos.DistanceToVector2(point);
 			//TODO: add speed of robot to this calculation
-			double forwardSpeed = speed*(currDistance/startDistance)
+			double forwardSpeed = 1f;
 			//times -1 because our left drivetrain motors are mirrored from the right ones
 			double speedLeft = (forwardSpeed*0.8 + -0.1*(currAngle - absoluteAngle))*-1;
 			double speedRight = forwardSpeed*0.8 + 0.1*(currAngle - absoluteAngle);
@@ -274,6 +277,12 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
 			MotorFrontLeft.setPower(speedLeft);
 			MotorBackRight.setPower(speedRight);
 			MotorFrontRight.setPower(speedRight);
+            opMode.telemetry.addData("distance", currDistance);
+            opMode.telemetry.update();
 		}
+        MotorBackLeft.setPower(0);
+        MotorFrontLeft.setPower(0);
+        MotorBackRight.setPower(0);
+        MotorFrontRight.setPower(0);
 	}
 }

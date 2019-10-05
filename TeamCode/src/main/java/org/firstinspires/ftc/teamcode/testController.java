@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
 
 import java.util.Calendar;
+import java.util.Vector;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 
@@ -44,7 +45,7 @@ public class testController extends LinearOpMode {
         } catch (Exception e){
 
         }
-        int i = 1;
+        int i = 4;
         while (opModeIsActive()){
             a.UpdatePos();
 
@@ -68,6 +69,10 @@ public class testController extends LinearOpMode {
                 i=3;
             } else if (i == 3) {
                 a.TurnToAngle(135, 1, 0.25);
+                i=4;
+            } else if (i == 4){
+                a.MoveToPos(new Vector2(590,0),0.75f);
+                i=5;
             }
         }
         logUtils.StopLogging(1);

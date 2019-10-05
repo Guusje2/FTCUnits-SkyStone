@@ -26,6 +26,7 @@ public class DriverOp2 extends OpMode {
     private DcMotor MotorFrontLeft;
     private DcMotor MotorBackRight;
     private DcMotor MotorBackLeft;
+    private Servo basisServo;
    // private DcMotor ArmMotor;
    // private Servo BlockBoxServo;
    // private Servo ArmServo1;
@@ -42,6 +43,7 @@ public class DriverOp2 extends OpMode {
   //  private float ArmServo2Power = 0;
    // private float ArmServo3Pos;
     private double startTimeLock;
+    private boolean foundation = false;
 
 
     @Override
@@ -50,12 +52,7 @@ public class DriverOp2 extends OpMode {
         MotorBackRight  = hardwareMap.dcMotor.get("MotorBackRight");
         MotorFrontLeft  = hardwareMap.dcMotor.get("MotorFrontLeft");
         MotorFrontRight = hardwareMap.dcMotor.get("MotorFrontRight");
-        //ArmMotor = hardwareMap.dcMotor.get("ArmMotor");
-        //LiftMotor = hardwareMap.dcMotor.get("LiftMotor");
-        //BlockBoxServo = hardwareMap.servo.get("BlockBoxServo");
-        //ArmServo1 = hardwareMap.servo.get("ArmServo1");
-        //ArmServo2 = hardwareMap.crservo.get("ArmServo2");
-        //ArmServo3 = hardwareMap.servo.get("ArmServo3");
+        basisServo = hardwareMap.servo.get("basisServo");
 
         driveDirectionSpeed  = 1;
 
@@ -98,11 +95,6 @@ public class DriverOp2 extends OpMode {
             temp = driveDirectionSpeed;
             driveDirectionSpeed = temp * -1;
         }
-        //if (gamepad1.x){
-          //  BLockBoxOpen();
-        //} else {
-          //  BlockBoxClose();
-        //}
 
         if(gamepad1.left_bumper){
             if(x != -1)
@@ -125,20 +117,15 @@ public class DriverOp2 extends OpMode {
         if (gamepad1.dpad_right) {
             sidemoving(-1);
         }
-        //if (isLocked){
-          //  if (startTimeLock + 20 < getRuntime()){
-           //     isLocked = false;
-            //}
-            //LiftMotor.setPower(-.5);
-        //} else {
-          //  LiftMotor.setPower(-gamepad2.left_stick_y);
-        //}
-        //if(gamepad2.a){
-          //   isLocked = true;
-            // startTimeLock = getRuntime();
-       //}
-       if(gamepad2.b){
-            isLocked = false;
+       if(gamepad1.b){
+           foundation = true;
+       } else if (gamepad1.a) {
+           foundation = false;
+       }
+       if (foundation){
+           basisServo.setPosition(1);
+       } else{
+           basisServo.setPosition(0);
        }
 
     }
@@ -149,49 +136,5 @@ public class DriverOp2 extends OpMode {
             MotorBackRight.setPower(-speed);
             MotorFrontRight.setPower(speed);
         }
-    
-    /*public void ArmChecks() {
-       
-       if (gamepad2.left_bumper){
-               ArmServo2Power = -1;
-
-       } else if(gamepad2.right_bumper) {
-               ArmServo2Power = 1;
-       } else {
-           ArmServo2Power = -.1f;
-       }
-       telemetry.addData("ArmServo2Power", ArmServo2Power);
-       ArmServo2.setPower(ArmServo2Power);
-
-       //ArmMotor.setPower(-0.5*gamepad2.right_stick_y);
-
-       ArmServo1.setPosition(ArmServo1Pos);
-       if(ArmServo1Pos < 1 ) {
-           ArmServo1Pos += 0.05 * gamepad2.right_trigger;
-       }
-       if(ArmServo1Pos > -1) {
-           ArmServo1Pos -= 0.05 * gamepad2.left_trigger;
-       }
-       ArmServo3Pos += gamepad2.right_stick_y * 0.05;
-        ArmServo3.setPosition(ArmServo3Pos);
-       telemetry.addData("ArmServo3Pos", ArmServo3Pos);
-    }
-
-    /**
-     * Opens the BlockBox, used for teammaker/game elements
-     *//*
-    public void BLockBoxOpen () {
-        BlockBoxServo.setPosition(0);
-
-    } */
-
-    /**
-     * Closes the BlockBox, used for teammarker/game elements
-     *
-    public void BlockBoxClose () {
-        BlockBoxServo.setPosition(.3);
-    }
-
-*/
 }
 
