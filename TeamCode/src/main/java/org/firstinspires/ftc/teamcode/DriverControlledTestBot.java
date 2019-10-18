@@ -4,9 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
-
-@TeleOp(name = "Guus", group = "testbot")
+@TeleOp(name = "DriverControlled1stick", group = "testbot")
 public class DriverControlledTestBot extends OpMode {
     public DriveTrainMecanumEncoder drivetrain;
     public void init() {
@@ -15,13 +13,7 @@ public class DriverControlledTestBot extends OpMode {
 
     public void loop() {
         drivetrain.UpdatePos();
-        double left;
-        double right;
-        double front;
-
-        left = gamepad1.left_stick_y;
-        front = gamepad1.left_stick_x;
-
-        drivetrain.MoveToPos(new Vector2(left*358,front*358),1);
+        drivetrain.yMovement = gamepad1.left_stick_y;
+        drivetrain.xMovement = gamepad1.left_stick_x;
     }
 }

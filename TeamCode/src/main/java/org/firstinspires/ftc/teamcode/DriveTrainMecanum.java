@@ -23,6 +23,14 @@ public class DriveTrainMecanum {
     public LinearOpMode opMode;
     public FtcDashboard dashboard;
     public BNO055IMU imu;
+    /**
+     * In power values, 1 is full right and -1 is full left
+     */
+    public double xMovement = 0;
+    /**
+     * In power values, 1 is full speed ahead and -1 full speed back
+     */
+    public double yMovement = 0;
 
 
     public  DriveTrainMecanum (DcMotor _MotorBackLeft, DcMotor _MotorBackRight, DcMotor _MotorFrontLeft, DcMotor _MotorFrontRight, BNO055IMU _imu) {
@@ -127,6 +135,28 @@ public class DriveTrainMecanum {
         MotorFrontLeft.setPower(0);
         MotorFrontRight.setPower(0);
         MotorBackRight.setPower(0);
+    }
+
+    public void Move () {
+        double frontLeft = 0;
+        double frontRight = 0;
+        double backLeft = 0;
+        double backRight = 0;
+
+        frontLeft += yMovement;
+        backLeft += yMovement;
+        frontRight -= yMovement;
+        backRight -= yMovement;
+
+        frontLeft -= xMovement;
+        frontRight -= xMovement;
+        backLeft += xMovement;
+        backRight += xMovement;
+
+        MotorBackLeft.setPower(backLeft);
+        MotorFrontLeft.setPower(frontLeft);
+        MotorFrontRight.setPower(frontRight);
+        MotorBackRight.setPower(backRight);
     }
 
 }
