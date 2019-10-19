@@ -12,8 +12,18 @@ public class DriverControlledTestBot extends OpMode {
     }
 
     public void loop() {
-        drivetrain.UpdatePos();
         drivetrain.yMovement = gamepad1.left_stick_y;
         drivetrain.xMovement = gamepad1.left_stick_x;
+
+
+        drivetrain.rotation = 0;
+            drivetrain.rotation -= gamepad1.left_trigger;
+
+            drivetrain.rotation += gamepad1.right_trigger;
+
+
+        telemetry.addData("Rotation", drivetrain.rotation);
+        telemetry.update();
+        drivetrain.MoveRotation();
     }
 }

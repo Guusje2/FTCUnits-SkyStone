@@ -45,7 +45,7 @@ public class testController extends LinearOpMode {
         } catch (Exception e){
 
         }
-        int i = 4;
+        int i = 5;
         while (opModeIsActive()){
             a.UpdatePos();
 
@@ -56,9 +56,7 @@ public class testController extends LinearOpMode {
 
             }
             if (i == 0 ) {
-                TelemetryPacket c = new TelemetryPacket();
-                c.put("Status","MoveSideways");
-                a.dashboard.sendTelemetryPacket(c);
+
                 a.MoveSideWaySeconds(1,5);
                 i=1;
             } else if (i == 1){
@@ -73,6 +71,8 @@ public class testController extends LinearOpMode {
             } else if (i == 4){
                 a.MoveToPos(new Vector2(590,0),0.75f);
                 i=5;
+            } else if (i==5){
+
             }
         }
         logUtils.StopLogging(1);
