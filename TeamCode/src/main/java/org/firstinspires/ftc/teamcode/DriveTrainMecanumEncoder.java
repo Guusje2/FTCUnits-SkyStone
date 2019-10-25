@@ -1,18 +1,19 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.canvas.Canvas;
+
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryImpl;
 import org.firstinspires.ftc.teamcode.MathEssentials.MathFunctions;
 import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
+import org.opencv.core.Mat;
+
 
 /**
  * Extended from DriveTrainMecanum, but includes encoder based driving
@@ -22,7 +23,9 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
     public RobotConstants robotConstants;
     private int xEncoderPulses;
     private int yEncoderPulses;
-    public Vector2 CurrentPos;
+
+    public Vector2 currentPos;
+
     private double dx = 0;
     private double dy = 0;
     public double currAngle;
@@ -46,7 +49,9 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         imu = _imu;
         xEncoderPulses = MotorFrontLeft.getCurrentPosition();
         yEncoderPulses = MotorBackLeft.getCurrentPosition();
-        CurrentPos = new Vector2(0,0);
+
+        currentPos = new Vector2(0,0);
+
 		currAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
         try {
             FtcDashboard.start();
@@ -79,7 +84,9 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         double dy = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
 
         //add the deltas to the current position
-        CurrentPos = new Vector2(CurrentPos.X + dx,CurrentPos.Y + dy);
+
+        currentPos = new Vector2(currentPos.X + dx, currentPos.Y + dy);
+
 
 		//send telemetry
         TelemetryPacket b = new TelemetryPacket();
@@ -87,10 +94,12 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         b.put("yPulse", MotorBackLeft.getCurrentPosition());
         b.put("dX", dx);
         b.put("dY", dy);
-        b.put("xPos", CurrentPos.X);
-        b.put("yPos", CurrentPos.Y);
+
+        b.put("xPos", currentPos.X);
+        b.put("yPos", currentPos.Y);
         b.put("angle", currAngle);
-        //b.fieldOverlay().fillRect(CurrentPos.X/25.4 ,CurrentPos.Y/25.4 ,20,20);
+        //b.fieldOverlay().fillRect(currentPos.X/25.4 ,currentPos.Y/25.4 ,20,20);
+
         dashboard.sendTelemetryPacket(b);
 		//set all values for the next run
         xEncoderPulses = xPulsesCurrent;
@@ -121,19 +130,25 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         double dy = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
 
         //add the deltas to the current position
-        CurrentPos = new Vector2(CurrentPos.X + dx,CurrentPos.Y + dy);
+
+        currentPos = new Vector2(currentPos.X + dx, currentPos.Y + dy);
+
+
 
 
         packet.put("xPulse", MotorFrontLeft.getCurrentPosition());
         packet.put("yPulse", MotorBackLeft.getCurrentPosition());
-        packet.put("xPos", CurrentPos.X);
-        packet.put("yPos", CurrentPos.Y);
+
+        packet.put("xPos", currentPos.X);
+        packet.put("yPos", currentPos.Y);
+
+
         packet.put("dx", dx);
         packet.put("dy", dy);
         packet.put("angle", currAngle);
         //divide by 25.4 because from mm to inches
         //
-        // packet.fieldOverlay().fillRect(CurrentPos.X/25.4 + 77,CurrentPos.Y/25.4 + 77,20,20);
+
         dashboard.sendTelemetryPacket(packet);
         xEncoderPulses = xPulsesCurrent;
         yEncoderPulses = yPulsesCurrent;
@@ -238,11 +253,13 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         double left = 0;
         double right = 0;
         double correction;
-        double startPosY = CurrentPos.Y;
+
+        double startPosY = currentPos.Y;
 
         double motorSpeed=0;
 
-        while (startPosY + distance > CurrentPos.Y && opMode.opModeIsActive()){
+        while (startPosY + distance > currentPos.Y && opMode.opModeIsActive()){
+
             correction = (startAngle - currAngle)*-0.1;
             motorSpeed = Speed;
             right = motorSpeed + correction;
@@ -259,30 +276,38 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         MotorFrontRight.setPower(0);
     }
 
-    public void MoveToPos(Vector2 point, float speed){
-		double startDistance = CurrentPos.DistanceToVector2(point);
-		double currDistance = CurrentPos.DistanceToVector2(point); ;
-		double dx = point.X - CurrentPos.X;
-        double dy = point.Y - CurrentPos.Y;
-        double absoluteAngle = Math.toDegrees(Math.atan2(dx,dy));
-        TurnToAngle(absoluteAngle,2*speed, 1);
-		while(!MathFunctions.Ish(currDistance, 10, 0) && opMode.opModeIsActive()) {
-			currDistance = CurrentPos.DistanceToVector2(point);
-			//TODO: add speed of robot to this calculation
-			double forwardSpeed = 1f;
-			//times -1 because our left drivetrain motors are mirrored from the right ones
-			double speedLeft = (forwardSpeed*0.8 + -0.1*(currAngle - absoluteAngle))*-1;
-			double speedRight = forwardSpeed*0.8 + 0.1*(currAngle - absoluteAngle);
-			MotorBackLeft.setPower(speedLeft);
-			MotorFrontLeft.setPower(speedLeft);
-			MotorBackRight.setPower(speedRight);
-			MotorFrontRight.setPower(speedRight);
-            opMode.telemetry.addData("distance", currDistance);
-            opMode.telemetry.update();
-		}
-        MotorBackLeft.setPower(0);
-        MotorFrontLeft.setPower(0);
-        MotorBackRight.setPower(0);
-        MotorFrontRight.setPower(0);
+
+    /**
+     * Moves the robot to a position on the field
+     * @param point point to move to
+     * @param speed robot speed
+     */
+    public void MoveToPos(Vector2 point, double speed, double targetAngle, double turnSpeed){
+
+        double distanceToTarget = point.DistanceToVector2(currentPos);
+
+        double worldAngleTarget = Math.atan2(point.Y - currentPos.Y, point.X - currentPos.X);
+
+        double robotAnglePoint = MathFunctions.FixAngleRad(worldAngleTarget - Math.toRadians(currAngle));
+
+        double relativedX = Math.cos(robotAnglePoint) * distanceToTarget;
+        double relativedY = Math.sin(robotAnglePoint) * distanceToTarget;
+
+        double xPower = relativedX / (Math.abs(relativedX) + Math.abs(relativedY));
+        double yPower = relativedY / (Math.abs(relativedX) + Math.abs(relativedY));
+
+        xMovement = xPower * speed;
+        yMovement = yPower * speed;
+
+
+        double relativeRotation = robotAnglePoint - Math.PI + Math.toRadians(targetAngle);
+        rotation = Range.clip( relativeRotation/Math.toRadians(25), -1, 1)* turnSpeed;
+
+        if (distanceToTarget < 100){
+            rotation = 0;
+        }
+        Move();
+        UpdatePos();
+
 	}
 }

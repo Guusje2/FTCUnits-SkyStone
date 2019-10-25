@@ -1,17 +1,20 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.acmerobotics.dashboard.config.ValueProvider;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+
+import org.firstinspires.ftc.teamcode.MathEssentials.MathFunctions;
 import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
 
 import java.util.Calendar;
-import java.util.Vector;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
+
 
 /**
  * Created by guusd on 9/23/2017.
@@ -50,7 +53,9 @@ public class testController extends LinearOpMode {
             a.UpdatePos();
 
             try {
-                logUtils.Log(logUtils.logType.normal, Calendar.getInstance().getTime().toString() + "," + a.CurrentPos.X + "," + a.CurrentPos.Y,1);
+
+                logUtils.Log(logUtils.logType.normal, Calendar.getInstance().getTime().toString() + "," + a.currentPos.X + "," + a.currentPos.Y,1);
+
 
             } catch (Exception e){
 
@@ -69,8 +74,12 @@ public class testController extends LinearOpMode {
                 a.TurnToAngle(135, 1, 0.25);
                 i=4;
             } else if (i == 4){
-                a.MoveToPos(new Vector2(590,0),0.75f);
-                i=5;
+
+                if(MathFunctions.Ish(a.currentPos.DistanceToVector2(new Vector2(1000,1000)), 10, 0)){
+                    i= 5;
+                }
+                a.MoveToPos(new Vector2(1000,1000),0.4, 0, 0.2);
+
             } else if (i==5){
 
             }
