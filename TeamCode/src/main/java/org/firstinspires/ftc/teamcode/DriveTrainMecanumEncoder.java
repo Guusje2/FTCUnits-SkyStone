@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,7 +13,6 @@ import org.firstinspires.ftc.teamcode.MathEssentials.MathFunctions;
 import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
 import org.opencv.core.Mat;
 
-
 /**
  * Extended from DriveTrainMecanum, but includes encoder based driving
  * Expects the encoder horizontal to be on MotorFrontLeft and encoder vertical to be on MotorBackLeft
@@ -23,9 +21,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
     public RobotConstants robotConstants;
     private int xEncoderPulses;
     private int yEncoderPulses;
-
     public Vector2 currentPos;
-
     private double dx = 0;
     private double dy = 0;
     public double currAngle;
@@ -49,9 +45,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         imu = _imu;
         xEncoderPulses = MotorFrontLeft.getCurrentPosition();
         yEncoderPulses = MotorBackLeft.getCurrentPosition();
-
         currentPos = new Vector2(0,0);
-
 		currAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
         try {
             FtcDashboard.start();
@@ -84,9 +78,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         double dy = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
 
         //add the deltas to the current position
-
         currentPos = new Vector2(currentPos.X + dx, currentPos.Y + dy);
-
 
 		//send telemetry
         TelemetryPacket b = new TelemetryPacket();
@@ -94,12 +86,10 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         b.put("yPulse", MotorBackLeft.getCurrentPosition());
         b.put("dX", dx);
         b.put("dY", dy);
-
         b.put("xPos", currentPos.X);
         b.put("yPos", currentPos.Y);
         b.put("angle", currAngle);
         //b.fieldOverlay().fillRect(currentPos.X/25.4 ,currentPos.Y/25.4 ,20,20);
-
         dashboard.sendTelemetryPacket(b);
 		//set all values for the next run
         xEncoderPulses = xPulsesCurrent;
@@ -130,25 +120,19 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         double dy = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
 
         //add the deltas to the current position
-
         currentPos = new Vector2(currentPos.X + dx, currentPos.Y + dy);
-
-
 
 
         packet.put("xPulse", MotorFrontLeft.getCurrentPosition());
         packet.put("yPulse", MotorBackLeft.getCurrentPosition());
-
         packet.put("xPos", currentPos.X);
         packet.put("yPos", currentPos.Y);
-
-
         packet.put("dx", dx);
         packet.put("dy", dy);
         packet.put("angle", currAngle);
         //divide by 25.4 because from mm to inches
         //
-
+        // packet.fieldOverlay().fillRect(currentPos.X/25.4 + 77,currentPos.Y/25.4 + 77,20,20);
         dashboard.sendTelemetryPacket(packet);
         xEncoderPulses = xPulsesCurrent;
         yEncoderPulses = yPulsesCurrent;
@@ -253,13 +237,11 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         double left = 0;
         double right = 0;
         double correction;
-
         double startPosY = currentPos.Y;
 
         double motorSpeed=0;
 
         while (startPosY + distance > currentPos.Y && opMode.opModeIsActive()){
-
             correction = (startAngle - currAngle)*-0.1;
             motorSpeed = Speed;
             right = motorSpeed + correction;
@@ -275,7 +257,6 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         MotorBackRight.setPower(0);
         MotorFrontRight.setPower(0);
     }
-
 
     /**
      * Moves the robot to a position on the field
@@ -308,6 +289,5 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         }
         Move();
         UpdatePos();
-
 	}
 }
