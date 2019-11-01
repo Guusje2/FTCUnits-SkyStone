@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.util.JsonReader;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -13,6 +19,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.MathEssentials.MathFunctions;
 import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
 import org.opencv.core.Mat;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 
 /**
@@ -310,4 +324,77 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         UpdatePos();
 
 	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////            Pos import shit
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Vector2 ImportedPos;
+    boolean isBlue;
+
+    public void loadJSONFile() {
+        File input = new File(logUtils.getPublicAlbumStorageDir("FTCunits") + "startpos.json");
+        InputStream is;
+        ImportedPos = new Vector2(0,0);
+        try{
+            is = new FileInputStream(input);
+            JsonReader reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
+            while (reader.hasNext()){
+                String name = reader.nextName();
+                switch (name){
+                    case "x":
+                    ImportedPos.X = reader.nextInt();
+                        break;
+                    case "y":
+                        ImportedPos.Y = reader.nextInt();
+                        break;
+                    case "blueAlliance":
+                        isBlue = reader.nextBoolean();
+                        break;
+                }
+                reader.endObject();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////               import van stackoverflow
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    /**
+     * Checks if the app has permission to write to device storage
+     *
+     * If the app does not has permission then the user will be prompted to grant permissions
+     *
+     * @param activity
+     */
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+
 }
