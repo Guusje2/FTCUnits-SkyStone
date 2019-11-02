@@ -48,7 +48,7 @@ public class testController extends LinearOpMode {
         } catch (Exception e){
 
         }
-        int i = 5;
+        int i = 4;
         while (opModeIsActive()){
             a.UpdatePos();
 

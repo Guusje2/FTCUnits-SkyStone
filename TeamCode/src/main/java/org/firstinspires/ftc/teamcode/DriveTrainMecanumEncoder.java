@@ -94,8 +94,8 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         double yMovementRobot = yEncoderDelta * RobotConstants.mmPerPulse;
 
         //Calculate the accurate deltas in world space
-        double dx = (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
-        double dy = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
+        double dx = ((Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot))*-1;
+        double dy = ((Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot))*    1;
 
         //add the deltas to the current position
 
@@ -140,8 +140,8 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         double yMovementRobot = yEncoderDelta * RobotConstants.mmPerPulse;
 
         //Calculate the accurate deltas in world space
-        double dx = (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
-        double dy = (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot);
+        double dx = ((Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot))*-1;
+        double dy = ((Math.cos(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * yMovementRobot) + (Math.sin(MathFunctions.FixAngleRad(Math.toRadians(currAngle))) * xMovementRobot))*    1;
 
         //add the deltas to the current position
 
@@ -311,7 +311,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         double yPower = relativedY / (Math.abs(relativedX) + Math.abs(relativedY));
 
         xMovement = xPower * speed;
-        yMovement = yPower * speed;
+        yMovement = -yPower * speed;
 
 
         double relativeRotation = robotAnglePoint - Math.PI + Math.toRadians(targetAngle);
@@ -396,5 +396,5 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
                     REQUEST_EXTERNAL_STORAGE
             );
         }
-
+    }
 }
