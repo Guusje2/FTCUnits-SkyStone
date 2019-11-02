@@ -65,7 +65,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         yEncoderPulses = MotorBackLeft.getCurrentPosition();
 
         currentPos = new Vector2(0,0);
-
+        logUtils.StartLogging(1);
 		currAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
         try {
             FtcDashboard.start();
@@ -116,6 +116,8 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
 
         dashboard.sendTelemetryPacket(b);
 		//set all values for the next run
+
+        logUtils.Log(logUtils.logType.normal, "" + "," + CurrentPos.X + "," + CurrentPos.Y + "," + angle + "," + dx + "," + dy,1);
         xEncoderPulses = xPulsesCurrent;
         yEncoderPulses = yPulsesCurrent;
 		prevAngle = currAngle;
@@ -164,6 +166,8 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         //
 
         dashboard.sendTelemetryPacket(packet);
+
+        logUtils.Log(logUtils.logType.normal, "" + "," + CurrentPos.X + "," + CurrentPos.Y + "," + angle + "," + dx + "," + dy,1);
         xEncoderPulses = xPulsesCurrent;
         yEncoderPulses = yPulsesCurrent;
 		prevAngle = currAngle;
