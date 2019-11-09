@@ -45,7 +45,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
     public double currAngle;
     double prevAngle;
 
-    public  DriveTrainMecanumEncoder (DcMotor _MotorBackLeft, DcMotor _MotorBackRight, DcMotor _MotorFrontLeft, DcMotor _MotorFrontRight, BNO055IMU _imu) {
+    public  DriveTrainMecanumEncoder (DcMotor _MotorBackLeft, DcMotor _MotorBackRight, DcMotor _MotorFrontLeft, DcMotor _MotorFrontRight, BNO055IMU _imu) throws IOException {
         MotorBackLeft = _MotorBackLeft;
         MotorBackRight = _MotorBackRight;
         MotorFrontLeft = _MotorFrontLeft;
@@ -117,7 +117,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         dashboard.sendTelemetryPacket(b);
 		//set all values for the next run
 
-        logUtils.Log(logUtils.logType.normal, "" + "," + CurrentPos.X + "," + CurrentPos.Y + "," + angle + "," + dx + "," + dy,1);
+        logUtils.Log(logUtils.logType.normal, "" + "," + currentPos.X + "," + currentPos.Y + "," + currAngle + "," + dx + "," + dy,1);
         xEncoderPulses = xPulsesCurrent;
         yEncoderPulses = yPulsesCurrent;
 		prevAngle = currAngle;
@@ -167,7 +167,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
 
         dashboard.sendTelemetryPacket(packet);
 
-        logUtils.Log(logUtils.logType.normal, "" + "," + CurrentPos.X + "," + CurrentPos.Y + "," + angle + "," + dx + "," + dy,1);
+        logUtils.Log(logUtils.logType.normal, "" + "," + currentPos.X + "," + currentPos.Y + "," + currAngle + "," + dx + "," + dy,1);
         xEncoderPulses = xPulsesCurrent;
         yEncoderPulses = yPulsesCurrent;
 		prevAngle = currAngle;
@@ -202,7 +202,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
                 MotorBackRight.setPower(-speed*(Math.abs(delta/22.5)) - -0.005* imu.getAngularVelocity().zRotationRate - 0.1);
             }
             UpdatePos(packet);
-        }
+        };
         MotorBackLeft.setPower(0);
         MotorFrontLeft.setPower(0);
         MotorFrontRight.setPower(0);
@@ -311,10 +311,10 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         double relativedX = Math.cos(robotAnglePoint) * distanceToTarget;
         double relativedY = Math.sin(robotAnglePoint) * distanceToTarget;
 
-        double xPower = relativedX / (Math.abs(relativedX) + Math.abs(relativedY));
-        double yPower = relativedY / (Math.abs(relativedX) + Math.abs(relativedY));
+        double xPower = relativedX / (Math.abs(relativedX) + Math.abs(relativedY))*1.5;
+        double yPower = relativedY / (Math.abs(relativedX) + Math.abs(relativedY))*1.5;
 
-        xMovement = xPower * speed;
+        xMovement = xPower * speed ;
         yMovement = -yPower * speed;
 
 

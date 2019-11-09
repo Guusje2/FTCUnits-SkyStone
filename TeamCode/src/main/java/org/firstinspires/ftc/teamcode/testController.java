@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.MathEssentials.MathFunctions;
 import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
 
+import java.io.IOException;
 import java.util.Calendar;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
@@ -30,13 +31,17 @@ public class testController extends LinearOpMode {
     logUtils e = new logUtils();
 
     public void runOpMode() {
-        a = new DriveTrainMecanumEncoder(
-                hardwareMap.dcMotor.get("MotorBackLeft"),
-                hardwareMap.dcMotor.get("MotorBackRight"),
-                hardwareMap.dcMotor.get("MotorFrontLeft"),
-                hardwareMap.dcMotor.get("MotorFrontRight"),
-                hardwareMap.get(BNO055IMU.class, "imu")
-        );
+        try {
+            a = new DriveTrainMecanumEncoder(
+                    hardwareMap.dcMotor.get("MotorBackLeft"),
+                    hardwareMap.dcMotor.get("MotorBackRight"),
+                    hardwareMap.dcMotor.get("MotorFrontLeft"),
+                    hardwareMap.dcMotor.get("MotorFrontRight"),
+                    hardwareMap.get(BNO055IMU.class, "imu")
+            );
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
         //a.dashboard.addConfigVariable("Odometry", "mmPerPulse",
         a.opMode = this;
         TelemetryPacket b = new TelemetryPacket();
@@ -78,7 +83,7 @@ public class testController extends LinearOpMode {
                 if(MathFunctions.Ish(a.currentPos.DistanceToVector2(new Vector2(1000,1000)), 10, 0)){
                     i= 5;
                 }
-                a.MoveToPos(new Vector2(1000,1000),0.4, 0, 0.2);
+                a.MoveToPos(new Vector2(1000,1000),0.4, 90, 0.2);
 
             } else if (i==5){
 

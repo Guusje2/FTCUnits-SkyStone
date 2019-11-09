@@ -41,6 +41,7 @@ public class Vector2 {
 
 
     public double Slope (){
+
         return (Y/X);
     }
 
