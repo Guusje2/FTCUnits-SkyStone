@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.MathEssentials.CurvePoint;
 import org.firstinspires.ftc.teamcode.MathEssentials.MathFunctions;
 import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
 import org.opencv.core.Mat;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 
 /**
@@ -324,11 +326,38 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         if (distanceToTarget < 100){
             rotation = 0;
         }
-        Move();
+        MoveRotation();
         UpdatePos();
 
 	}
 
+	public  CurvePoint getFollowPointPath (ArrayList<CurvePoint> pathPoints, Vector2 robotPos, double followRadius){
+        CurvePoint followMe = new CurvePoint(pathPoints.get(0));
+
+        for (int i = 0; i < pathPoints.size() -1; i++){
+            CurvePoint startLine = pathPoints.get(i);
+            CurvePoint endline = pathPoints.get(i + 1);
+            ArrayList<Vector2> intersections = MathFunctions.lineCircleIntersection(robotPos, followRadius, startLine.toVector2(), endline.toVector2() );
+
+            double closestAngle = 10000000;
+
+            for (Vector2 thisIntersection : intersections){
+                double angle = Math.atan2(thisIntersection.Y - currentPos.Y, thisIntersection.X - currentPos.X);
+                double deltaAngle = Math.abs(MathFunctions.FixAngle(angle-currAngle));
+
+                if(deltaAngle < closestAngle){
+                    closestAngle = deltaAngle;
+                    followMe.setVector2(thisIntersection);
+                }
+            }
+        }
+        return followMe;
+    }
+
+    public  void FollowCurve(ArrayList<CurvePoint> allPoints, double followAngle){
+        CurvePoint followMe = getFollowPointPath(allPoints, currentPos, allPoints.get(0).followDistance);
+        MoveToPos(new Vector2(followMe.x,followMe.y), followMe.moveSpeed, followAngle, followMe.turnSpeed);
+    }
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////            Pos import shit
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

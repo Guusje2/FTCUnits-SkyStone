@@ -8,10 +8,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
+import org.firstinspires.ftc.teamcode.MathEssentials.CurvePoint;
 import org.firstinspires.ftc.teamcode.MathEssentials.MathFunctions;
 import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
@@ -47,6 +49,10 @@ public class testController extends LinearOpMode {
         TelemetryPacket b = new TelemetryPacket();
         b.put("Status","Waiting");
         a.dashboard.sendTelemetryPacket(b);
+        ArrayList<CurvePoint> allPoints = new ArrayList<>();
+        allPoints.add(new CurvePoint(1000,1000, 1.0, 1.0, 500, 90, 1));
+        allPoints.add(new CurvePoint(1000,1500, 1.0, 1.0, 500, 90, 1));
+        allPoints.add(new CurvePoint(2000,2000, 1.0, 1.0, 500, 90, 1));
         waitForStart();
         try {
             logUtils.Log(logUtils.logType.normal,"Time,X,Y",1);
@@ -86,7 +92,7 @@ public class testController extends LinearOpMode {
                 a.MoveToPos(new Vector2(1000,1000),0.4, 90, 0.2);
 
             } else if (i==5){
-
+                a.FollowCurve(allPoints, 0);
             }
         }
         logUtils.StopLogging(1);
