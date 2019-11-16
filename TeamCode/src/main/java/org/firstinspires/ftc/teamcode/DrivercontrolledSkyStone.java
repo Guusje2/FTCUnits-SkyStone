@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
+
 @TeleOp(name = "VuileBalkBak", group = "")
 public class DrivercontrolledSkyStone extends OpMode {
     DriveTrainMecanum a;
@@ -13,11 +14,14 @@ public class DrivercontrolledSkyStone extends OpMode {
     public Servo bakServo2;
     public double PosServo;
     public double rotation;
+    public DcMotor Armmotor;
+
     @Override
     public void init() {
         a = new DriveTrainMecanum(hardwareMap.dcMotor.get("MotorBackLeft"),hardwareMap.dcMotor.get("MotorFrontLeft"),hardwareMap.dcMotor.get("MotorBackRight"),hardwareMap.dcMotor.get("MotorFrontRight"),hardwareMap.get(BNO055IMU.class,"imu"));
         bakServo1 = hardwareMap.servo.get("BalkServo1");
         bakServo2 = hardwareMap.servo.get("BalkServo2");
+        Armmotor = hardwareMap.dcMotor.get("armmotor");
     }
 
     @Override
@@ -34,6 +38,7 @@ public class DrivercontrolledSkyStone extends OpMode {
         bakServo2.setPosition(PosServo);
 
 
+        Armmotor.setPower(gamepad2.left_stick_y);
 
 
         rotation += gamepad1.right_trigger;

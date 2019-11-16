@@ -22,11 +22,11 @@ public class Motorcontroller extends OpMode {
 
 
 
-    private DcMotor MotorFrontRight;
-    private DcMotor MotorFrontLeft;
-    private DcMotor MotorBackRight;
-    private DcMotor MotorBackLeft;
-    private DcMotor ArmMotor;
+        private DcMotor MotorFrontRight;
+        private DcMotor MotorFrontLeft;
+        private DcMotor MotorBackRight;
+        private DcMotor MotorBackLeft;
+        private DcMotor ArmMotor;
     public  boolean IsControlled = true;
     private Servo Servo1;
 
