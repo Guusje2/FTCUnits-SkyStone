@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -12,9 +13,12 @@ public class DrivercontrolledSkyStone extends OpMode {
     DriveTrainMecanum a;
     public Servo bakServo1;
     public Servo bakServo2;
+    public Servo armServo1;
+    public Servo armServo2;
     public double PosServo;
     public double rotation;
     public DcMotor Armmotor;
+    private double PosArmServo;
 
     @Override
     public void init() {
@@ -34,9 +38,29 @@ public class DrivercontrolledSkyStone extends OpMode {
             PosServo += 0.01;
         }
 
+        if (gamepad2.dpad_down)
+        {
+            PosArmServo -= 0.01;
+        }
+        if (gamepad2.dpad_up){
+            PosArmServo += 0.01;
+        }
+
+        armServo1.setPosition(PosArmServo);
+        armServo2.setPosition(PosArmServo);
+
+        if (PosServo < 0.26){
+            PosServo = 0.26;
+        } else if (PosServo >1){
+            PosServo = 1;
+        }
+
+
         bakServo1.setPosition(PosServo);
         bakServo2.setPosition(PosServo);
 
+        telemetry.addData("servopos1", bakServo1.getPosition());
+        telemetry.addData("servopos2", bakServo2.getPosition());
 
         Armmotor.setPower(gamepad2.left_stick_y);
 
