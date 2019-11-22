@@ -66,7 +66,7 @@ import java.util.List;
 @Disabled
 @Autonomous(name = "Depot side", group = "Concept")
 
-public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
+public class ConceptTensorFlowObjectDetectionWebcamRR2 extends LinearOpMode {
     private enum  mineralPosEnum {none,left,center,right};
     private mineralPosEnum mineralPos;
     public int Runstate = 0;

@@ -27,11 +27,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import java.io.IOException;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -51,6 +54,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  */
 @TeleOp(name = "Detection Auto", group = "Concept")
 public class DetectionAuto extends LinearOpMode {
+    public DriveTrainMecanumEncoder a;
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Stone";
     private static final String LABEL_SECOND_ELEMENT = "Skystone";
@@ -93,6 +97,13 @@ public class DetectionAuto extends LinearOpMode {
         } else {
             telemetry.addData("Sorry!", "This device is not compatible with TFOD");
         }
+        try {
+            a = new DriveTrainMecanumEncoder(hardwareMap.dcMotor.get("MotorBackLeft"), hardwareMap.dcMotor.get("MotorBackRight"), hardwareMap.dcMotor.get("MotorFrontLeft"), hardwareMap.dcMotor.get("MotorFrontRight"), hardwareMap.get(BNO055IMU.class, "imu"));
+            a.loadJSONFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
@@ -109,7 +120,9 @@ public class DetectionAuto extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                if (tfod != null) {
+                a.UpdatePos();
+
+                /*if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
@@ -126,7 +139,7 @@ public class DetectionAuto extends LinearOpMode {
                       }
                       telemetry.update();
                     }
-                }
+                }*/
             }
         }
 
