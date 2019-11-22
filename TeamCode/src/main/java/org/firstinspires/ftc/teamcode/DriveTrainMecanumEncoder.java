@@ -16,6 +16,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.Actions.RobotAction;
+import org.firstinspires.ftc.teamcode.Actions.robotActions;
 import org.firstinspires.ftc.teamcode.MathEssentials.CurvePoint;
 import org.firstinspires.ftc.teamcode.MathEssentials.MathFunctions;
 import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
@@ -364,6 +366,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
 
     Vector2 ImportedPos;
     boolean isBlue;
+    public RobotAction[] actions;
 
     public void loadJSONFile() {
         File input = new File(logUtils.getPublicAlbumStorageDir("FTCunits") + "startpos.json");
@@ -384,6 +387,19 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
                     case "blueAlliance":
                         isBlue = reader.nextBoolean();
                         break;
+                    case "actions":
+                        reader.beginArray();
+                        while (reader.hasNext()){
+                            reader.beginObject();
+                            RobotAction a = new RobotAction();
+                            a.action = robotActions.valueOf(reader.nextString());
+                            a.paramter = reader.nextDouble();
+                            actions[actions.length] = a;
+                            reader.endObject();
+                        }
+                        reader.endArray();
+                        break;
+
                 }
                 reader.endObject();
             }

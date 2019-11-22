@@ -23,4 +23,8 @@ public class RobotAction {
                 break;
         }
     }
+
+    public RobotAction() {
+
+    }
 }
