@@ -26,6 +26,8 @@ public class DrivercontrolledSkyStone extends OpMode {
         bakServo1 = hardwareMap.servo.get("BalkServo1");
         bakServo2 = hardwareMap.servo.get("BalkServo2");
         Armmotor = hardwareMap.dcMotor.get("armmotor");
+        armServo1 = hardwareMap.servo.get("ArmServo1");
+        armServo2 = hardwareMap.servo.get("ArmServo2");
     }
 
     @Override
@@ -44,6 +46,11 @@ public class DrivercontrolledSkyStone extends OpMode {
         }
         if (gamepad2.dpad_up){
             PosArmServo += 0.01;
+        }
+        if (PosArmServo < 0.26){
+            PosArmServo = 0.26;
+        } else if (PosArmServo >1){
+            PosArmServo = 1;
         }
 
         armServo1.setPosition(PosArmServo);
@@ -64,12 +71,12 @@ public class DrivercontrolledSkyStone extends OpMode {
 
         Armmotor.setPower(gamepad2.left_stick_y);
 
-
+        rotation = 0;
         rotation += gamepad1.right_trigger;
         rotation -= gamepad1.left_trigger;
         a.rotation = rotation;
-        a.xMovement = gamepad1.left_stick_x;
-        a.yMovement = gamepad1.left_stick_y;
+        a.xMovement = -gamepad1.left_stick_y;
+        a.yMovement = gamepad1.left_stick_x;
         a.MoveRotation();
     }
 }

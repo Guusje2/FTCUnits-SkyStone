@@ -403,9 +403,9 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
                 }
                 reader.endObject();
             }
+        } catch (UnsupportedEncodingException e) {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
