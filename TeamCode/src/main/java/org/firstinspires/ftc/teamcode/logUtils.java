@@ -37,6 +37,15 @@ public class logUtils {
         filewriters.put(id,new FileWriter(file));
     }
 
+    public static void StartLogging(Integer id, String _fileNamePrefix) throws IOException {
+        String FileName =  teamname + " | " + _fileNamePrefix + " " + Calendar.getInstance().getTime().toString() + ".csv";
+        File file = new File(getPublicAlbumStorageDir(teamname),FileName );
+        if(filewriters == null){
+            filewriters = new HashMap<Integer, FileWriter>();
+        }
+        filewriters.put(id,new FileWriter(file));
+    }
+
     /**sets the FTC team name, used in the file name */
     public static void setTeamname(String _teamname){
         teamname = _teamname;

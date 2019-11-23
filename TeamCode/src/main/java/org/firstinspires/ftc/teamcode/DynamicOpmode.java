@@ -10,16 +10,20 @@ import org.firstinspires.ftc.teamcode.MathEssentials.MathFunctions;
 import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Autonomous(name = "DynamicAuto")
 public class DynamicOpmode extends LinearOpMode {
     public DriveTrainMecanumEncoder a;
-    RobotAction[] actions;
-    int ActionIndex;
+    List<RobotAction> actions;
+    int ActionIndex = 0;
     private double startWaitTime;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        actions = new ArrayList<RobotAction>();
         try {
             a = new DriveTrainMecanumEncoder(hardwareMap.dcMotor.get("MotorBackLeft"), hardwareMap.dcMotor.get("MotorFrontLeft"), hardwareMap.dcMotor.get("MotorFrontRight"), hardwareMap.dcMotor.get("MotorBackRight"), hardwareMap.get(BNO055IMU.class, "imu"));
         } catch (IOException e) {
@@ -27,11 +31,17 @@ public class DynamicOpmode extends LinearOpMode {
         }
         a.loadJSONFile();
         a.currentPos = a.ImportedPos.add(new Vector2(200, 222.5));
-        actions = a.actions;
 
+        actions = Arrays.asList(a.actions);
+        for (RobotAction c : actions
+        ) {
+            telemetry.addData(String.valueOf(c.action), c.paramter);
+        }
+        telemetry.update();
+        waitForStart();
         while (opModeIsActive()){
-            if (ActionIndex + 1 <= actions.length){
-                RobotAction action = actions[ActionIndex];
+            if (ActionIndex + 1 <= actions.size()){
+                RobotAction action = actions.get(ActionIndex) ;
                 switch (action.action) {
                     case wait:
                         Wait(action.paramter);
@@ -54,7 +64,7 @@ public class DynamicOpmode extends LinearOpMode {
             startWaitTime = getRuntime();
         }
         telemetry.addData("Status", "waiting");
-        if (getRuntime()-startWaitTime > timeSeconds){
+        if (getRuntime()-startWaitTime > timeSeconds*1000){
             startWaitTime = 0;
             ActionIndex++;
         }
