@@ -12,14 +12,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 @Autonomous(name = "SidewaysBlocks")
 public class SidewaysBlocks extends LinearOpMode {
     DriveTrainMecanum driveTrain;
+
     /**
      * In ms
      */
     public double timeToMove = 2;
     public double startTime;
     public double startAngle;
+
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         driveTrain = new DriveTrainMecanum(hardwareMap.dcMotor.get("MotorBackLeft"),hardwareMap.dcMotor.get("MotorFrontLeft"),hardwareMap.dcMotor.get("MotorBackRight"),hardwareMap.dcMotor.get("MotorFrontRight"),hardwareMap.get(BNO055IMU.class,"imu"));
         startTime = getRuntime();
         startAngle = driveTrain.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;

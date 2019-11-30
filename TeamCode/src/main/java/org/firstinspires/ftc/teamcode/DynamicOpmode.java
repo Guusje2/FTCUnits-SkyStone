@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Actions.RobotAction;
+import org.firstinspires.ftc.teamcode.Actions.robotActions;
 import org.firstinspires.ftc.teamcode.MathEssentials.MathFunctions;
 import org.firstinspires.ftc.teamcode.MathEssentials.Vector2;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,15 +32,19 @@ public class DynamicOpmode extends LinearOpMode {
         a.loadJSONFile();
         a.currentPos = a.ImportedPos.add(new Vector2(200, 222.5));
 
-        actions = Arrays.asList(a.actions);
-        for (RobotAction c : actions
-        ) {
-            telemetry.addData(String.valueOf(c.action), c.paramter);
+        if(a.actions != null) {
+            actions = a.actions;
+            actions.add(new RobotAction(robotActions.wait, 5));
+            actions.add(new RobotAction(robotActions.park, 1));
+            for (RobotAction c : actions
+            ) {
+                telemetry.addData(String.valueOf(c.action), c.paramter);
+            }
         }
         telemetry.update();
         waitForStart();
         while (opModeIsActive()){
-            if (ActionIndex + 1 <= actions.size()){
+            if (ActionIndex  <= actions.size()){
                 RobotAction action = actions.get(ActionIndex) ;
                 switch (action.action) {
                     case wait:
@@ -57,6 +61,7 @@ public class DynamicOpmode extends LinearOpMode {
             telemetry.addData("Currentpos", "X: " + a.currentPos.X + " Y: " + a.currentPos.Y);
             telemetry.update();
         }
+        logUtils.StopLogging(1);
     }
 
     public void Wait (double timeSeconds){
@@ -64,13 +69,15 @@ public class DynamicOpmode extends LinearOpMode {
             startWaitTime = getRuntime();
         }
         telemetry.addData("Status", "waiting");
-        if (getRuntime()-startWaitTime > timeSeconds*1000){
+        telemetry.addData("timediff", getRuntime()-startWaitTime + " > " + timeSeconds*1000 );
+        if (getRuntime()-startWaitTime > timeSeconds){
             startWaitTime = 0;
             ActionIndex++;
         }
     }
 
     public void Park(double pos){
+        telemetry.addData("Status", "park");
         if (pos == 1){
             if (MathFunctions.Ish(a.currentPos.X,50,1790) && MathFunctions.Ish(a.currentPos.Y, 50,222.5)){
                 ActionIndex++;

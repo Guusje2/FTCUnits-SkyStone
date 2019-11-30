@@ -27,4 +27,10 @@ public class RobotAction {
     public RobotAction() {
 
     }
+
+    public RobotAction(robotActions wait, int i) {
+        action = wait;
+        paramter = i;
+    }
+
 }

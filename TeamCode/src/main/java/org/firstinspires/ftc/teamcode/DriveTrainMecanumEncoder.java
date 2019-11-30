@@ -32,6 +32,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
+
+import static org.firstinspires.ftc.teamcode.logUtils.filewriters;
+import static org.firstinspires.ftc.teamcode.logUtils.getPublicAlbumStorageDir;
 
 
 /**
@@ -57,6 +61,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
         MotorFrontRight = _MotorFrontRight;
         MotorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        actions = new ArrayList<>();
         try {
             Thread.sleep(50);
         } catch (InterruptedException e) {
@@ -334,7 +339,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
 
 	}
 
-	public  CurvePoint getFollowPointPath (ArrayList<CurvePoint> pathPoints, Vector2 robotPos, double followRadius){
+	public CurvePoint getFollowPointPath (ArrayList<CurvePoint> pathPoints, Vector2 robotPos, double followRadius){
         CurvePoint followMe = new CurvePoint(pathPoints.get(0));
 
         for (int i = 0; i < pathPoints.size() -1; i++){
@@ -367,15 +372,20 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
 
     Vector2 ImportedPos;
     boolean isBlue;
-    public RobotAction[] actions;
+    public List<RobotAction> actions;
 
     public void loadJSONFile() {
-        File input = new File(logUtils.getPublicAlbumStorageDir("FTCunits") + "startpos.json");
+        File file = new File(String.valueOf(getPublicAlbumStorageDir("FTCunits")));
+        File input = new File(file + "/startpos.json");
         InputStream is;
         ImportedPos = new Vector2(0,0);
+        if (!input.canRead()){
+            logUtils.Log(logUtils.logType.error, "Cant read file",1 );
+        }
         try{
             is = new FileInputStream(input);
             JsonReader reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
+            logUtils.Log(logUtils.logType.normal, reader.toString() + ",test", 1);
             while (reader.hasNext()){
                 String name = reader.nextName();
                 switch (name){
@@ -395,7 +405,7 @@ public class DriveTrainMecanumEncoder extends DriveTrainMecanum {
                             RobotAction a = new RobotAction();
                             a.action = robotActions.valueOf(reader.nextString());
                             a.paramter = reader.nextDouble();
-                            actions[actions.length] = a;
+                            actions.add(a);
                             reader.endObject();
                         }
                         reader.endArray();
