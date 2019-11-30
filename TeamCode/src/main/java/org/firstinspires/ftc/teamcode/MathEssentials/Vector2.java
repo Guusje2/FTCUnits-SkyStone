@@ -33,6 +33,7 @@ public class Vector2 {
         X = x;
         Y = y;
     }
+
     public Vector2() {
         X = 0;
         Y = 0;
