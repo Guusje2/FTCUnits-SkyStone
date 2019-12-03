@@ -14,11 +14,11 @@ public class SidewaysBlocks extends LinearOpMode {
     DriveTrainMecanum driveTrain;
 
     /**
-     * In ms
+     * In s
      */
     public double timeToMove = 2;
-    public double startTime;
-    public double startAngle;
+    public double startTime = 0;
+    public double startAngle = 0;
 
     @Override
     public void runOpMode() {
@@ -28,6 +28,8 @@ public class SidewaysBlocks extends LinearOpMode {
         while (startTime + timeToMove > getRuntime()){
             driveTrain.rotation = 0.1*(startAngle - driveTrain.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle);
             driveTrain.xMovement = -1;
+            telemetry.addData("TimeLeft", startTime + timeToMove - getRuntime());
+            telemetry.update();
         }
     }
 
