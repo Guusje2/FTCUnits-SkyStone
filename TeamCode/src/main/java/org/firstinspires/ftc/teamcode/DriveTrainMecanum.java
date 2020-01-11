@@ -8,6 +8,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -44,6 +45,8 @@ public class DriveTrainMecanum {
         MotorBackRight = _MotorBackRight;
         MotorFrontLeft = _MotorFrontLeft;
         MotorFrontRight = _MotorFrontRight;
+        MotorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        MotorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         imu = _imu;
 
         try {
@@ -183,18 +186,18 @@ public class DriveTrainMecanum {
 
         frontLeft += yMovement;
         backLeft += yMovement;
-        frontRight -= yMovement;
-        backRight -= yMovement;
+        frontRight += yMovement;
+        backRight += yMovement;
 
-        frontLeft -= xMovement;
+        frontLeft += xMovement;
         frontRight -= xMovement;
-        backLeft += xMovement;
+        backLeft -= xMovement;
         backRight += xMovement;
 
         frontRight -= rotation;
         backRight -= rotation;
-        frontLeft -= rotation;
-        backLeft -= rotation;
+        frontLeft += rotation;
+        backLeft += rotation;
 
         MotorBackLeft.setPower(backLeft);
         MotorFrontLeft.setPower(frontLeft);

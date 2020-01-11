@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.teamcode.MathEssentials.MathFunctions;
+
 import java.io.IOException;
 
 
@@ -19,11 +21,11 @@ public class DrivercontrolledSkyStone extends OpMode {
     public double rotation;
     public DcMotor KlemMotor1;
     public DcMotor KlemMotor2;
-    private double PosSchuifServo = 1;
+    private double PosSchuifServo = 0;
 
     @Override
     public void init() {
-        a = new DriveTrainMecanum(hardwareMap.dcMotor.get("MotorBackLeft"),hardwareMap.dcMotor.get("MotorFrontLeft"),hardwareMap.dcMotor.get("MotorBackRight"),hardwareMap.dcMotor.get("MotorFrontRight"),hardwareMap.get(BNO055IMU.class,"imu"));
+        a = new DriveTrainMecanum(hardwareMap.dcMotor.get("MotorBackLeft"),hardwareMap.dcMotor.get("MotorBackRight"),hardwareMap.dcMotor.get("MotorFrontLeft"),hardwareMap.dcMotor.get("MotorFrontRight"),hardwareMap.get(BNO055IMU.class,"imu"));
 
         KlemMotor1 = hardwareMap.dcMotor.get("KlemMotor");
         KlemMotor2 = hardwareMap.dcMotor.get("KlemMotor2");
@@ -41,10 +43,10 @@ public class DrivercontrolledSkyStone extends OpMode {
 
         if (gamepad2.dpad_down)
         {
-            PosSchuifServo -= 0.01;
+            PosSchuifServo += 0.01;
         }
         if (gamepad2.dpad_up){
-            PosSchuifServo += 0.01;
+            PosSchuifServo -= 0.01;
         }
         if (PosSchuifServo < 0.17){
             PosSchuifServo = 0.17;
@@ -55,20 +57,26 @@ public class DrivercontrolledSkyStone extends OpMode {
         SchuifServo1.setPosition(PosSchuifServo);
         SchuifServo2.setPosition(PosSchuifServo);
 
-        
 
-        telemetry.addData("servopos1", SchuifServo1.getPosition());
-        telemetry.addData("servopos2", SchuifServo2.getPosition());
+        double LeftStickY =  gamepad2.left_stick_y;
+        if (LeftStickY > 0){
+            LeftStickY = 0;
+        }
+        if (gamepad2.a){
+            LeftStickY = 0.5;
+        }
+        KlemMotor1.setPower(-1*LeftStickY);
+        KlemMotor2.setPower(LeftStickY);
 
-        KlemMotor1.setPower(gamepad2.left_stick_y);
-        KlemMotor2.setPower(gamepad2.left_stick_y*-1);
+        if (gamepad1.a){
 
+        }
         rotation = 0;
         rotation += gamepad1.right_trigger;
         rotation -= gamepad1.left_trigger;
         a.rotation = rotation;
-        a.xMovement = gamepad1.left_stick_y;
-        a.yMovement = -gamepad1.left_stick_x;
+        a.xMovement = -gamepad1.left_stick_x;
+        a.yMovement = -gamepad1.left_stick_y;
         a.MoveRotation();
         logUtils.Log(logUtils.logType.normal, String.valueOf(getBatteryVoltage()) + "," + -gamepad1.left_stick_y + "," + gamepad1.left_stick_x + "," + rotation ,3);
     }

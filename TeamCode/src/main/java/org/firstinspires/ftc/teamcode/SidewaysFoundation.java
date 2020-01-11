@@ -13,21 +13,30 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 public class SidewaysFoundation extends LinearOpMode {
     DriveTrainMecanum driveTrain;
     /**
-     * In ms
+     * In s
      */
-    public double timeToMove = 2;
+    public double timeToMove = 3;
     public double startTime;
     public double startAngle;
     @Override
-    public void runOpMode() throws InterruptedException {
-        driveTrain = new DriveTrainMecanum(hardwareMap.dcMotor.get("MotorBackLeft"),hardwareMap.dcMotor.get("MotorFrontLeft"),hardwareMap.dcMotor.get("MotorBackRight"),hardwareMap.dcMotor.get("MotorFrontRight"),hardwareMap.get(BNO055IMU.class,"imu"));
+    public void runOpMode() {
+        driveTrain = new DriveTrainMecanum(hardwareMap.dcMotor.get("MotorBackLeft"),hardwareMap.dcMotor.get("MotorBackRight"),hardwareMap.dcMotor.get("MotorFrontLeft"),hardwareMap.dcMotor.get("MotorFrontRight"),hardwareMap.get(BNO055IMU.class,"imu"));
 
-        startTime = getRuntime();
+
         startAngle = driveTrain.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
-        while (startTime + timeToMove > getRuntime()){
-            driveTrain.rotation = 0.1*(startAngle - driveTrain.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle);
-            driveTrain.xMovement = -1;
+        waitForStart();
+        startTime = getRuntime();
+        while (startTime + 20 > getRuntime() && opModeIsActive()){
+
         }
+        startTime = getRuntime();
+        while (startTime + timeToMove > getRuntime() && opModeIsActive()){
+            //driveTrain.rotation = 0.1*(startAngle - driveTrain.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle);
+            driveTrain.xMovement = -0.5;
+            //driveTrain.yMovement = .5;
+            driveTrain.MoveRotation();
+        }
+
     }
 
 }
